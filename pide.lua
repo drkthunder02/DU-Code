@@ -32,13 +32,14 @@ end
 
 function pide:update(setpoint, measurement)
 	-- Error signal
-	self.err = setpoint - measurement
+	err = setpoint - measurement
+	
 	
 	-- Proportion Term
-	local proportional = self.Kp * self.err
+	local proportional = self.Kp * err
 	
 	-- Integral Term
-	self.integrator = self.integrator + 0.5 * self.Ki * self.tTime * (self.err + self.prevError)
+	self.integrator = self.integrator + 0.5 * self.Ki * self.tTime * (err + self.prevError)
 	
 	-- Anti-Windup integrator clamping
 	if self.integrator > self.limMax then
@@ -48,6 +49,7 @@ function pide:update(setpoint, measurement)
 	if self.integrator < self.limMin then
 		self.integrator = self.limMin
 	end
+	
 
 	-- Derivative Term
 	self.differentiator = -(2.0 * self.Kd * (measurement - self.prevMeasurement) + (2 * self.tau - self.tTime) * self.differentiator) / (2.0 * self.tau + self.tTime)
@@ -64,7 +66,7 @@ function pide:update(setpoint, measurement)
 	end
 	
 	-- Store error and measurement for later use
-	self.prevError = self.err
+	self.prevError = err
 	self.prevMeasurement = measurement
 	return self.out
 end
